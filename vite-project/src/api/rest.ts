@@ -7,8 +7,18 @@ async function getParticipants() {
   return await res.json();
 }
 
+async function getParticipant(participantId: string) {
+  const res = await fetch(`${endpoint}/participants/${participantId}`);
+  return await res.json();
+}
+
 async function getDisciplines() {
   const res = await fetch(`${endpoint}/disciplines`);
+  return await res.json();
+}
+
+async function getDiscipline(disciplineId: string) {
+  const res = await fetch(`${endpoint}/disciplines/${disciplineId}`);
   return await res.json();
 }
 
@@ -75,4 +85,4 @@ async function createResult(result: Result) {
   return await res.json();
 }
 
-export { getParticipants, getDisciplines, getResults, addDiscipline, createParticipant, updateParticipant, deleteParticipant, createResult };
+export { getParticipants, getDisciplines, getResults, addDiscipline, createParticipant, updateParticipant, deleteParticipant, createResult, getDiscipline, getParticipant };

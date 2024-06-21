@@ -4,6 +4,7 @@ import { getDisciplines, getParticipants, getResults, createParticipant, createR
 import { Participant, Discipline, Result } from "../types/types";
 import ParticipantList from "../components/ParticipantList";
 import DisciplineList from "../components/DisciplineList";
+import ResultList from "../components/ResultList";
 import CreateParticipantModal from "../components/CreateParticipantModal"; // Adjust path as per your project structure
 import CreateResultModal from "../components/CreateResultModal"; // Adjust path as per your project structure
 
@@ -74,8 +75,9 @@ const HomePage: React.FC = () => {
 
       <ParticipantList participants={participants} />
       <DisciplineList disciplines={disciplines} />
+      <ResultList results={results} />
 
-      <CreateParticipantModal isOpen={isParticipantModalOpen} closeModal={closeParticipantModal} onSubmit={handleCreateParticipant} />
+      <CreateParticipantModal isOpen={isParticipantModalOpen} disciplines={disciplines} closeModal={closeParticipantModal} onSubmit={handleCreateParticipant} />
       <CreateResultModal isOpen={isResultModalOpen} closeModal={closeResultModal} onSubmit={handleCreateResult} participants={participants} disciplines={disciplines} />
     </div>
   );

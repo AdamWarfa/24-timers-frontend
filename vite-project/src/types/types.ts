@@ -20,8 +20,8 @@ interface Result {
   resultType: string;
   date: string;
   participantId: string;
-  disciplinId: string;
-  result: string;
+  disciplineId: string;
+  resultValue: number;
 }
 
 export type { Participant, Discipline, Result };

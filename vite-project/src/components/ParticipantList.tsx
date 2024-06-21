@@ -1,6 +1,4 @@
-// components/ParticipantList.tsx
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Participant } from "../types/types";
 import ParticipantDisciplinesModal from "./ParticipantDisciplinesModal";
 import DisciplineModal from "./DisciplineModal";
@@ -13,11 +11,20 @@ interface ParticipantListProps {
 }
 
 const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
+  const [filteredParticipants, setFilteredParticipants] = useState<Participant[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"name" | "gender" | "age" | "club">("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   const [isDisciplinesModalOpen, setIsDisciplinesModalOpen] = useState(false);
   const [isAddDisciplineModalOpen, setIsAddDisciplineModalOpen] = useState(false);
   const [isEditParticipantModalOpen, setIsEditParticipantModalOpen] = useState(false);
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+
+  useEffect(() => {
+    setFilteredParticipants(participants);
+  }, [participants]);
 
   const handleParticipantClick = (participant: Participant) => {
     setSelectedParticipant(participant);
@@ -60,9 +67,59 @@ const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
     }
   };
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value.toLowerCase();
+    setSearchTerm(searchTerm);
+    const filtered = participants.filter((participant) => participant.fullName.toLowerCase().includes(searchTerm));
+    setFilteredParticipants(filtered);
+  };
+
+  const handleSort = (property: "name" | "gender" | "age" | "club") => {
+    if (sortBy === property) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(property);
+      setSortOrder("asc");
+    }
+
+    const sortedParticipants = [...filteredParticipants].sort((a, b) => {
+      const factor = sortOrder === "asc" ? 1 : -1;
+      if (property === "name") {
+        return factor * a.fullName.localeCompare(b.fullName);
+      } else if (property === "gender") {
+        return factor * a.gender.localeCompare(b.gender);
+      } else if (property === "age") {
+        return factor * (a.age - b.age);
+      } else if (property === "club") {
+        return factor * a.club.localeCompare(b.club);
+      }
+      return 0;
+    });
+
+    setFilteredParticipants(sortedParticipants);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Participants List</h1>
+      <div className="flex items-center mb-4">
+        <input type="text" className="border rounded px-2 py-1 mr-2" placeholder="Search by name" value={searchTerm} onChange={handleSearch} />
+        <div>
+          <span className="mr-2">Sort by:</span>
+          <button className={`border rounded px-2 py-1 ${sortBy === "name" ? "bg-gray-300" : ""}`} onClick={() => handleSort("name")}>
+            Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+          </button>
+          <button className={`border rounded px-2 py-1 ml-2 ${sortBy === "gender" ? "bg-gray-300" : ""}`} onClick={() => handleSort("gender")}>
+            Gender {sortBy === "gender" && (sortOrder === "asc" ? "▲" : "▼")}
+          </button>
+          <button className={`border rounded px-2 py-1 ml-2 ${sortBy === "age" ? "bg-gray-300" : ""}`} onClick={() => handleSort("age")}>
+            Age {sortBy === "age" && (sortOrder === "asc" ? "▲" : "▼")}
+          </button>
+          <button className={`border rounded px-2 py-1 ml-2 ${sortBy === "club" ? "bg-gray-300" : ""}`} onClick={() => handleSort("club")}>
+            Club {sortBy === "club" && (sortOrder === "asc" ? "▲" : "▼")}
+          </button>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
@@ -75,7 +132,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
             </tr>
           </thead>
           <tbody>
-            {participants.map((participant) => (
+            {filteredParticipants.map((participant) => (
               <tr key={participant.id} className="cursor-pointer hover:bg-gray-50">
                 <td className="py-2 px-4 border-b text-center">{participant.fullName}</td>
                 <td className="py-2 px-4 border-b text-center">{participant.gender}</td>
