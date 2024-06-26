@@ -4,7 +4,7 @@ import ParticipantDisciplinesModal from "./ParticipantDisciplinesModal";
 import DisciplineModal from "./DisciplineModal";
 import EditParticipantModal from "./EditParticipantModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { deleteParticipant } from "../api/rest";
+import { deleteParticipant, updateParticipant } from "../api/rest";
 
 interface ParticipantListProps {
   participants: Participant[];
@@ -55,8 +55,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
   };
 
   const handleParticipantUpdate = (updatedParticipant: Participant) => {
-    // Update participant logic here, possibly via an API call
-    console.log("Updated Participant:", updatedParticipant);
+    updateParticipant(updatedParticipant);
     handleModalClose();
   };
 
@@ -101,54 +100,54 @@ const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Participants List</h1>
-      <div className="flex items-center mb-4">
-        <input type="text" className="border rounded px-2 py-1 mr-2" placeholder="Search by name" value={searchTerm} onChange={handleSearch} />
-        <div>
-          <span className="mr-2">Sort by:</span>
-          <button className={`border rounded px-2 py-1 ${sortBy === "name" ? "bg-gray-300" : ""}`} onClick={() => handleSort("name")}>
+      <h1 className="text-3xl font-semibold mb-6">Participants List</h1>
+      <div className="flex items-center mb-6">
+        <input type="text" className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:border-blue-500 mr-4" placeholder="Search by name" value={searchTerm} onChange={handleSearch} />
+        <div className="flex items-center">
+          <span className="mr-2 font-medium">Sort by:</span>
+          <button className={`border rounded-lg px-4 py-2 mx-1 ${sortBy === "name" ? "bg-blue-100 text-blue-600" : "bg-white"} shadow-sm hover:bg-blue-50`} onClick={() => handleSort("name")}>
             Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}
           </button>
-          <button className={`border rounded px-2 py-1 ml-2 ${sortBy === "gender" ? "bg-gray-300" : ""}`} onClick={() => handleSort("gender")}>
+          <button className={`border rounded-lg px-4 py-2 mx-1 ${sortBy === "gender" ? "bg-blue-100 text-blue-600" : "bg-white"} shadow-sm hover:bg-blue-50`} onClick={() => handleSort("gender")}>
             Gender {sortBy === "gender" && (sortOrder === "asc" ? "▲" : "▼")}
           </button>
-          <button className={`border rounded px-2 py-1 ml-2 ${sortBy === "age" ? "bg-gray-300" : ""}`} onClick={() => handleSort("age")}>
+          <button className={`border rounded-lg px-4 py-2 mx-1 ${sortBy === "age" ? "bg-blue-100 text-blue-600" : "bg-white"} shadow-sm hover:bg-blue-50`} onClick={() => handleSort("age")}>
             Age {sortBy === "age" && (sortOrder === "asc" ? "▲" : "▼")}
           </button>
-          <button className={`border rounded px-2 py-1 ml-2 ${sortBy === "club" ? "bg-gray-300" : ""}`} onClick={() => handleSort("club")}>
+          <button className={`border rounded-lg px-4 py-2 mx-1 ${sortBy === "club" ? "bg-blue-100 text-blue-600" : "bg-white"} shadow-sm hover:bg-blue-50`} onClick={() => handleSort("club")}>
             Club {sortBy === "club" && (sortOrder === "asc" ? "▲" : "▼")}
           </button>
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b">Name</th>
-              <th className="py-2 px-4 border-b">Gender</th>
-              <th className="py-2 px-4 border-b">Age</th>
-              <th className="py-2 px-4 border-b">Club</th>
-              <th className="py-2 px-4 border-b">Actions</th>
+              <th className="py-2 px-4 border-b border-gray-200">Name</th>
+              <th className="py-2 px-4 border-b border-gray-200">Gender</th>
+              <th className="py-2 px-4 border-b border-gray-200">Age</th>
+              <th className="py-2 px-4 border-b border-gray-200">Club</th>
+              <th className="py-2 px-4 border-b border-gray-200">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredParticipants.map((participant) => (
-              <tr key={participant.id} className="cursor-pointer hover:bg-gray-50">
-                <td className="py-2 px-4 border-b text-center">{participant.fullName}</td>
-                <td className="py-2 px-4 border-b text-center">{participant.gender}</td>
-                <td className="py-2 px-4 border-b text-center">{participant.age}</td>
-                <td className="py-2 px-4 border-b text-center">{participant.club}</td>
-                <td className="py-2 px-4 border-b text-center">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleParticipantClick(participant)}>
+              <tr key={participant.id} className="hover:bg-gray-100 transition duration-150 ease-in-out">
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{participant.fullName}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{participant.gender}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{participant.age}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">{participant.club}</td>
+                <td className="py-2 px-4 border-b border-gray-200 text-center">
+                  <button className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 mx-1 shadow-sm hover:bg-gray-300" onClick={() => handleParticipantClick(participant)}>
                     View Disciplines
                   </button>
-                  <button className="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleAddDisciplineClick(participant)}>
+                  <button className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 mx-1 shadow-sm hover:bg-gray-300" onClick={() => handleAddDisciplineClick(participant)}>
                     Add Discipline
                   </button>
-                  <button className="ml-2 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleEditParticipantClick(participant)}>
+                  <button className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 mx-1 shadow-sm hover:bg-gray-300" onClick={() => handleEditParticipantClick(participant)}>
                     Edit
                   </button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDeleteClick(participant)}>
+                  <button className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 mx-1 shadow-sm hover:bg-gray-300" onClick={() => handleDeleteClick(participant)}>
                     Delete
                   </button>
                 </td>
