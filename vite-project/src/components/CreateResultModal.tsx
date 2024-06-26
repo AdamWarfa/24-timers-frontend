@@ -1,6 +1,6 @@
-// src/components/CreateResultModal.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Participant, Discipline, Result } from "../types/types";
+import { getDisciplines } from "../api/rest"; // Import your REST function
 
 interface CreateResultModalProps {
   isOpen: boolean;
@@ -12,10 +12,25 @@ interface CreateResultModalProps {
 
 const CreateResultModal: React.FC<CreateResultModalProps> = ({ isOpen, closeModal, participants, disciplines, onSubmit }) => {
   const [selectedParticipant, setSelectedParticipant] = useState<string>("");
+  const [filteredDisciplines, setFilteredDisciplines] = useState<Discipline[]>([]);
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
   const [resultType, setResultType] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [resultValue, setResultValue] = useState<number>(0);
+
+  useEffect(() => {
+    if (selectedParticipant) {
+      const participant = participants.find((p) => p.id === selectedParticipant);
+      if (participant && participant.disciplineIds.length > 0) {
+        const participantDisciplines = participant.disciplineIds.map((disciplineId) => disciplines.find((d) => d.id === disciplineId));
+        setFilteredDisciplines(participantDisciplines.filter((discipline) => !!discipline));
+      } else {
+        setFilteredDisciplines([]);
+      }
+    } else {
+      setFilteredDisciplines([]);
+    }
+  }, [selectedParticipant, participants, disciplines]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +43,17 @@ const CreateResultModal: React.FC<CreateResultModalProps> = ({ isOpen, closeModa
     });
   };
 
+  const handleParticipantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedParticipantId = e.target.value;
+    setSelectedParticipant(selectedParticipantId);
+    setSelectedDiscipline(""); // Reset selected discipline when participant changes
+  };
+
+  const handleDisciplineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedDisciplineId = e.target.value;
+    setSelectedDiscipline(selectedDisciplineId);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -37,11 +63,7 @@ const CreateResultModal: React.FC<CreateResultModalProps> = ({ isOpen, closeModa
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700">Participant</label>
-            <select
-              value={selectedParticipant}
-              onChange={(e) => setSelectedParticipant(e.target.value)}
-              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
+            <select value={selectedParticipant} onChange={handleParticipantChange} className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               <option value="">Select a participant</option>
               {participants.map((participant) => (
                 <option key={participant.id} value={participant.id}>
@@ -52,13 +74,9 @@ const CreateResultModal: React.FC<CreateResultModalProps> = ({ isOpen, closeModa
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Discipline</label>
-            <select
-              value={selectedDiscipline}
-              onChange={(e) => setSelectedDiscipline(e.target.value)}
-              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
+            <select value={selectedDiscipline} onChange={handleDisciplineChange} className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               <option value="">Select a discipline</option>
-              {disciplines.map((discipline) => (
+              {filteredDisciplines.map((discipline) => (
                 <option key={discipline.id} value={discipline.id}>
                   {discipline.name}
                 </option>
